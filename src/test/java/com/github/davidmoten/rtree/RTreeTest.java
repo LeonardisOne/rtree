@@ -14,6 +14,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileLock;
@@ -42,6 +43,7 @@ import com.github.davidmoten.rtree.geometry.Point;
 import com.github.davidmoten.rtree.geometry.Rectangle;
 import com.github.davidmoten.rtree.internal.EntryDefault;
 import com.github.davidmoten.rtree.internal.Functions;
+import com.thoughtworks.xstream.XStream;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -69,9 +71,20 @@ public class RTreeTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testSearchOnOneItem() {
+        XStream xstream = new XStream();
+        System.out.println("xstream created");
+
         RTree<Object, Rectangle> tree = RTree.create();
         Entry<Object, Rectangle> entry = e(1);
         tree = tree.add(entry);
+        try {
+			xstream.toXML(tree, new FileWriter("./serialized/rtree.xml"));
+			xstream.toXML(entry, new FileWriter("./serialized/entry.xml"));
+	        System.out.println("xstream serialized");
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
         assertEquals(Arrays.asList(entry), tree.search(r(1)).toList().toBlocking().single());
     }
 
